@@ -41,3 +41,13 @@ Each case study includes architecture decisions, individual contribution, attrib
 - `app/universe.css` and `app/studio.css`: active styles.
 
 Earlier standalone components and globals.css are retained as history but are not rendered. Fonts load from Google Fonts with system fallbacks. No generated video or external 3D assets are required.
+
+## Living systems refinement — October 2026
+
+The active design adds a procedural particle ribbon, sculpted Kazilo core, travelling connection signals and responsive visual refinements in `app/refinement.css`. Kazilo includes a keyboard-accessible three-platform showcase in `components/universe/KaziloPlatform.tsx`. Interfaces are illustrative, not product screenshots. Contribution copy reflects sole end-to-end engineering ownership.
+
+Validated with a production build, desktop WebGL rendering, platform tab and keyboard switching, and 390px mobile overflow checks. No voice tour is included.
+
+## Editorial + System Atlas hybrid
+
+The active site uses `app/portfolio.css`, composed in order from universe.css, studio.css and editorial.css. The homepage uses ivory, condensed typography and static red connector artwork. `SystemMap.tsx` provides inspectable architecture diagrams; the five existing project demos remain available. Kazilo ownership reflects full end-to-end engineering responsibility. The Three.js universe is retained in source history and is no longer loaded by the homepage.

@@ -1,0 +1,15 @@
+'use client';
+import { useState } from 'react';
+import { Work } from './content';
+import { ArrowUpRight } from 'lucide-react';
+export default function SystemMap({project, compact=false}:{project:Work;compact?:boolean}) {
+ const [active,setActive]=useState(0);
+ const kazilo=project.slug==='kazilo';
+ const nodes=kazilo?['Adobe Commerce','BigCommerce','Akeneo','Kazilo engine','Backend & APIs','Cloud infrastructure','Workflow execution']:project.architecture;
+ const descriptions=kazilo?['Dedicated commerce frontend. Built as part of the complete Kazilo platform.','A dedicated merchant frontend sharing the underlying integration capabilities.','A dedicated product operations frontend for Akeneo users.','Shared authoring and execution capabilities, built end to end.','Backend services and capability discovery support visual and AI-assisted authoring.','Infrastructure supports the control plane and tenant-owned execution.','Compiled workflows execute through specialised handlers and S3-backed context.']:nodes.map((n,i)=>`${n}. ${i===0?project.challenge:i===nodes.length-1?project.solution:project.architectureNote}`);
+ return <div className={`system-map ${compact?'map-compact':''}`}>
+  <div className="map-heading"><span>FIG. {project.id} / SYSTEM OVERVIEW</span><span>{compact?'ILLUSTRATIVE ARCHITECTURE':'SELECT A COMPONENT TO EXPLORE'}</span></div>
+  {kazilo?<div className="map-network"><div className="map-tier">{nodes.slice(0,3).map((n,i)=><button key={n} aria-pressed={active===i} onClick={()=>setActive(i)}><small>0{i+1} / FRONTEND</small><strong>{n}</strong><span>{['Commerce operations','Merchant workspace','Product operations'][i]}</span></button>)}</div><div className="map-wires" aria-hidden="true"><svg viewBox="0 0 600 70" preserveAspectRatio="none"><path d="M100 0V25Q100 40 120 40H280Q300 40 300 60V70M300 0V70M500 0V25Q500 40 480 40H320Q300 40 300 60"/></svg></div><button className="map-core" aria-pressed={active===3} onClick={()=>setActive(3)}><b>K</b><span><small>SHARED PLATFORM</small><strong>Kazilo engine</strong></span><span className="core-caption">AUTHOR → COMPILE → EXECUTE</span></button><div className="map-wires" aria-hidden="true"><svg viewBox="0 0 600 70" preserveAspectRatio="none"><path d="M300 0V20Q300 35 280 35H120Q100 35 100 50V70M300 0V70M300 20Q300 35 320 35H480Q500 35 500 50V70"/></svg></div><div className="map-tier map-bottom">{nodes.slice(4).map((n,i)=><button key={n} aria-pressed={active===i+4} onClick={()=>setActive(i+4)}><small>0{i+4} / FOUNDATION</small><strong>{n}</strong></button>)}</div></div>:<div className="map-sequence">{nodes.map((n,i)=><div key={n}><button aria-pressed={active===i} onClick={()=>setActive(i)}><small>0{i+1}</small><strong>{n}</strong></button>{i<nodes.length-1&&<span aria-hidden="true">↓</span>}</div>)}</div>}
+  {!compact&&<div className="map-inspection" aria-live="polite"><span>SELECTED / {String(active+1).padStart(2,'0')}</span><strong>{nodes[active]}</strong><p>{descriptions[active]}</p><ArrowUpRight size={20}/></div>}
+ </div>;
+}

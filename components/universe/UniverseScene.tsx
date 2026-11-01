@@ -15,7 +15,7 @@ export default function UniverseScene({ paused, active }: { paused: boolean; act
     import('three').then(THREE => {
       if (cancelled) return;
       let renderer: InstanceType<typeof THREE.WebGLRenderer>;
-      try { renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' }); }
+      try { renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'high-performance' }); }
       catch { return; }
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.7));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -35,14 +35,11 @@ export default function UniverseScene({ paused, active }: { paused: boolean; act
         const group = new THREE.Group();
         const material = new THREE.MeshPhysicalMaterial({ color: p.color, metalness: .45, roughness: .2, transparent: true, opacity: .82, clearcoat: 1 });
         if (p.shape === 'core') {
-          const crystal = new THREE.Mesh(new THREE.IcosahedronGeometry(.66, 0), material);
-          crystal.rotation.set(.3, .4, .2); group.add(crystal);
-          const frame = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(.88, 0)), wireMaterial(p.color));
-          group.add(frame); animated.push(frame);
-          for (let k = 0; k < 2; k++) {
-            const ring = new THREE.Mesh(new THREE.TorusGeometry(1.12 + k * .17, .009, 6, 100), new THREE.MeshBasicMaterial({ color: p.color, transparent: true, opacity: .4 }));
-            ring.rotation.set(1.1 + k * .6, k * .5, -.4); group.add(ring);
-          }
+          const sculpture = new THREE.Group();
+          const knot = new THREE.Mesh(new THREE.TorusKnotGeometry(.59, .18, 180, 24, 2, 3), new THREE.MeshPhysicalMaterial({color: '#aaa0ff', metalness: .8, roughness: .19, clearcoat: 1, emissive: '#3b176c', emissiveIntensity: .35}));
+          sculpture.add(knot);
+          const halo = new THREE.Mesh(new THREE.TorusGeometry(1.12, .006, 6, 160), new THREE.MeshBasicMaterial({color:'#c6b9ff',transparent:true,opacity:.65}));
+          halo.rotation.set(.95, .3, -.4); sculpture.add(halo); group.add(sculpture); animated.push(sculpture);
         } else if (p.shape === 'frames') {
           for (let k = 0; k < 3; k++) {
             const box = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1 - k * .21, 1 - k * .21, 1 - k * .21)), wireMaterial(p.color));
@@ -74,7 +71,7 @@ export default function UniverseScene({ paused, active }: { paused: boolean; act
       let height = 8;
       let paths: InstanceType<typeof THREE.CatmullRomCurve3>[] = [];
       const connections = new THREE.Group(); scene.add(connections);
-      const particles = Array.from({ length: 4 }, () => new THREE.Mesh(new THREE.SphereGeometry(.025, 8, 8), new THREE.MeshBasicMaterial({ color: 0xd0c0ff })));
+      const particles = Array.from({ length: 64 }, () => new THREE.Mesh(new THREE.SphereGeometry(.018, 6, 6), new THREE.MeshBasicMaterial({ color: 0xd0c0ff })));
       particles.forEach(p => scene.add(p));
       function clearConnections() {
         connections.children.forEach(obj => { const l = obj as InstanceType<typeof THREE.Line>; l.geometry.dispose(); (l.material as InstanceType<typeof THREE.Material>).dispose(); });
@@ -92,13 +89,32 @@ export default function UniverseScene({ paused, active }: { paused: boolean; act
           const start = meshes[0].position.clone(), end = meshes[i].position.clone();
           const middle = start.clone().lerp(end, .5); middle.y -= .6; middle.z = -.6;
           const curve = new THREE.CatmullRomCurve3([start, middle, end]); paths.push(curve);
-          connections.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(60)), new THREE.LineBasicMaterial({ color: 0x8d76bb, transparent: true, opacity: .22 })));
+          connections.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(60)), new THREE.LineBasicMaterial({ color: 0x8d76bb, transparent: true, opacity: .14 })));
         }
       }
-      const positions = new Float32Array(110 * 3);
-      for (let i = 0; i < 110; i++) { positions[i * 3] = Math.sin(i * 127.1) * 7; positions[i * 3 + 1] = Math.cos(i * 311.7) * 5; positions[i * 3 + 2] = -2; }
-      const stars = new THREE.BufferGeometry(); stars.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      scene.add(new THREE.Points(stars, new THREE.PointsMaterial({ size: .018, color: 0xa59ab9, transparent: true, opacity: .4 })));
+      const count = window.innerWidth < 760 ? 1600 : 4200;
+      const riverPositions = new Float32Array(count * 3);
+      const riverColors = new Float32Array(count * 3);
+      const river = new THREE.BufferGeometry();
+      const palette = [new THREE.Color('#bca1ff'),new THREE.Color('#71c8db'),new THREE.Color('#ecc1f6')];
+      for (let i=0;i<count;i++) { const c=palette[i%3]; riverColors.set([c.r,c.g,c.b],i*3); }
+      river.setAttribute('position',new THREE.BufferAttribute(riverPositions,3));
+      river.setAttribute('color',new THREE.BufferAttribute(riverColors,3));
+      const riverMaterial = new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,vertexColors:true,uniforms:{uPixel:{value:Math.min(window.devicePixelRatio,1.7)}},vertexShader:`uniform float uPixel; varying vec3 vColor; void main(){vColor=color;vec4 p=modelViewMatrix*vec4(position,1.);gl_Position=projectionMatrix*p;gl_PointSize=2.3*uPixel;}`,fragmentShader:`varying vec3 vColor;void main(){float d=length(gl_PointCoord-.5);float a=smoothstep(.5,.05,d);gl_FragColor=vec4(vColor,a*.62);}`});
+      scene.add(new THREE.Points(river,riverMaterial));
+      function updateRiver(t:number) {
+        for(let i=0;i<count;i++) {
+          const lane=i%7;
+          const u=((i/count+t*.018)%1);
+          const angle=u*Math.PI*2;
+          const spread=Math.sin(i*127.1)*.075;
+          const radius=2.05+lane*.105+spread;
+          riverPositions[i*3]=Math.cos(angle)*radius*1.65;
+          riverPositions[i*3+1]=Math.sin(angle)*radius*.55 + Math.sin(angle*3+t*.25+lane*.13)*.27 + (height>9 ? .3 : 0);
+          riverPositions[i*3+2]=Math.sin(angle)*1.05-1.3;
+        }
+        river.attributes.position.needsUpdate=true;
+      }
       const observer = new ResizeObserver(resize); observer.observe(element); resize();
       let inView = true, frame = 0, last = 0, elapsed = 0;
       const visibility = new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; }); visibility.observe(element);
@@ -119,7 +135,9 @@ export default function UniverseScene({ paused, active }: { paused: boolean; act
           if (!stop) { g.rotation.y = Math.sin(elapsed * .22 + i) * .2 + pointerX * .15; g.rotation.z = Math.sin(elapsed * .3 + i) * .045; }
         });
         if (!stop) animated.forEach((g, i) => { g.rotation.y += delta * .08 * (i % 2 ? 1 : -1); });
-        particles.forEach((p, i) => { if (paths[i]) p.position.copy(paths[i].getPointAt((elapsed * .1 + i * .23) % 1)); p.visible = !stop; });
+        particles.forEach((p, i) => { const path = paths[i % 4]; if (path) p.position.copy(path.getPointAt((elapsed * .065 + Math.floor(i / 4) / 16) % 1)); p.visible = true; p.scale.setScalar(i % 4 + 1 === work.findIndex(w => w.slug === selected) ? 1.8 : 1); });
+        updateRiver(elapsed);
+        riverMaterial.opacity = selected ? .9 : .7;
         camera.position.x = stop ? 0 : THREE.MathUtils.lerp(camera.position.x, pointerX * .15, .04);
         camera.position.y = stop ? 0 : THREE.MathUtils.lerp(camera.position.y, -pointerY * .1, .04);
         renderer.render(scene, camera);

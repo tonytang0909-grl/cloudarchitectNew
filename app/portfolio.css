@@ -25,3 +25,32 @@
 /* Keep the platform-switching product interaction available. */
 .platform-showcase{display:grid;grid-template-columns:.8fr 1.2fr;gap:40px}.platform-story{display:block}.platform-theatre{display:block;color:#eeeef2;color-scheme:dark}.platform-story h2{font-size:48px}.platform-story .ownership-stamp{margin-top:25px}.platform-theatre .eyeline{color:#9aa1b9}.platform-theatre button{color:#d5d9e4}.platform-theatre .shared-engine{background:#1745d8;border-color:#1745d8}.platform-theatre .engine-symbol,.platform-theatre .shared-engine small{color:#dbe5ff}.platform-theatre .engine-layers span{color:#606c84}.platform-theatre .engine-layers svg{color:#1745d8}.platform-window,.shared-engine{border-radius:2px;box-shadow:none}.platform-switch button{border-radius:2px;border-color:#28365a40;color:#56617d}.platform-switch button[aria-selected=true]{background:#1745d8;color:#fff;border-color:#1745d8}.platform-switch b{color:inherit}.engine-bridges i:after,.mini-flow>i:after,.engine-symbol{animation:none}.platform-window-body{animation:none}.map-core:focus-visible,.map-tier button:focus-visible{outline:2px solid #e74229;outline-offset:4px}
 @media(max-width:1000px){.platform-showcase{grid-template-columns:1fr;gap:25px}.platform-story{max-width:600px}}
+
+/* Intro as an editorial margin note; connectors stay below the reading area. */
+.editorial-intro{background:transparent;padding:22px 0 0;margin-top:30px;border-top:2px solid #e74229;max-width:270px}
+.editorial-intro .eyeline{font-size:9px;line-height:1.9;letter-spacing:1.3px;color:#737366}
+.editorial-intro p{font-size:17px;line-height:1.65;letter-spacing:-.25px;margin:22px 0 28px}
+.editorial-intro button{border:0;padding:0 0 8px;gap:16px;font-size:12px}
+.editorial-intro button svg{box-sizing:content-box;padding:10px;border:1px solid #17171340;border-radius:50%;transition:background .2s,color .2s,border-color .2s}
+.editorial-intro button:hover svg{background:#e74229;border-color:#e74229;color:#fff}
+.editorial-pipes{inset:53% -10% 0 42%;height:47%}
+@media(max-width:760px){.editorial-intro{max-width:290px;margin-top:30px;padding-top:18px;border-top:1px solid #17171340}.editorial-intro p{font-size:14px;margin:0 0 18px}.editorial-intro button svg{padding:8px}.editorial-pipes{inset:30% -30% 0 52%;height:45%;opacity:.12}}
+
+/* Intro as an editorial margin note; connectors stay below the reading area. */
+.editorial-intro{background:transparent;padding:22px 0 0;margin-top:30px;border-top:2px solid #e74229;max-width:270px}
+.editorial-intro .eyeline{font-size:9px;line-height:1.9;letter-spacing:1.3px;color:#737366}
+.editorial-intro p{font-size:17px;line-height:1.65;letter-spacing:-.25px;margin:22px 0 28px}
+.editorial-intro button{border:0;padding:0 0 8px;gap:16px;font-size:12px}
+.editorial-intro button svg{box-sizing:content-box;padding:10px;border:1px solid #17171340;border-radius:50%;transition:background .2s,color .2s,border-color .2s}
+.editorial-intro button:hover svg{background:#e74229;border-color:#e74229;color:#fff}
+.editorial-pipes{inset:64% -10% 0 42%;height:36%}
+@media(max-width:760px){.editorial-intro{max-width:290px;margin-top:30px;padding-top:18px;border-top:1px solid #17171340}.editorial-intro p{font-size:14px;margin:0 0 18px}.editorial-intro button svg{padding:8px}.editorial-pipes{inset:30% -30% 0 52%;height:45%;opacity:.12}}
+
+/* One clear action; the headline carries the introduction. */
+.editorial-hero{grid-template-columns:1fr;align-content:center;gap:28px}
+.hero-action{position:relative;z-index:1;justify-self:start;padding:0 0 18px}
+.hero-action button{display:flex;align-items:center;gap:22px;font-size:13px;padding:0}
+.hero-action svg{box-sizing:content-box;padding:12px;border:1px solid #17171355;border-radius:50%;transition:background .2s,color .2s,border-color .2s}
+.hero-action button:hover svg{background:#e74229;border-color:#e74229;color:white}
+.editorial-pipes{inset:0 -10% 0 52%;height:100%;width:65%}
+@media(max-width:760px){.editorial-hero{display:grid;gap:24px}.hero-action{padding-bottom:8px}.hero-action button{font-size:12px}.hero-action svg{padding:10px}.editorial-pipes{inset:0 -35% 0 58%;height:100%;width:85%;opacity:.12}}
